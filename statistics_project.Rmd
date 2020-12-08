@@ -1,0 +1,45 @@
+---
+title: "ICY0006: Statistics and probabilty theory project"
+output: html_notebook
+---
+Markus Aas 192920IVSB
+
+
+### Stage 1:
+My chosen dataset is about [Apartment prices in Sao Paulo](https://www.kaggle.com/felipecabueno/apartment-prices-in-sao-paulo-br-2020), which I got from the website [Kaggle](https://www.kaggle.com/).
+
+The dataset has 7 variables in total, of which 6 are numerical and 1 is categorical. The categorical variable in our case is
+
+* neighborhood name
+
+and the numerical variables are
+
+* area of the apartment in square meters 
+* number of bedrooms 
+* number of bathrooms
+* number of suites (set of rooms, usually bedroom with its own bathroom)
+* number of parking spaces
+* final price of the apartment in thousands of reais (R$, Brazilian currency).
+
+Here is an example of the 10 first rows of my dataset and basic information about the dataset:
+```{r}
+apartments_sp <- read.csv("C:/Users/aasma/Statistics/apartments_sp.csv")
+head(apartments_sp, n=10)
+str(apartments_sp)
+```
+
+The dataset has no missing values or errors.
+
+Some data visualization through distribution graphs:
+```{r}
+hist(apartments_sp$square_meters, main="Histogram for the area of the apartments", xlab="Square meters", col="red", breaks=100)
+hist(apartments_sp$bedrooms, breaks=8, main="Histogram for the number of bedrooms", xlab="Number of bedrooms")
+hist(apartments_sp$bathrooms, breaks=10, main="Histogram for the number of bathrooms", xlab="Number of bathrooms")
+hist(apartments_sp$suites, breaks=8, main="Histogram for the number of suites", xlab="Number of suites")
+hist(apartments_sp$parking_spaces, breaks=10, main="Histogram for the number of parking spaces", xlab="Number of parking spaces")
+hist(apartments_sp$final_price, main="Histogram for apartment prices", xlab="Thousands of reais (R$)", col="red", breaks=100)
+```
+```{r}
+lines(apartments_sp$square_meters)
+```
+
