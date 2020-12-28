@@ -32,27 +32,93 @@ The dataset has no missing values or errors.
 
 The following histograms and kernel density plots give an approximate understanding of the variables in the dataset and showcase the frequency and values of those variables. 
 ```{r}
-hist(apartments_sp$square_meters, main="Histogram of the area of the apartments", xlab="Square meters", col="red", breaks=100)
-hist(apartments_sp$bedrooms, breaks=8, main="Histogram of the number of bedrooms", xlab="Number of bedrooms")
-hist(apartments_sp$bathrooms, breaks=10, main="Histogram of the number of bathrooms", xlab="Number of bathrooms")
-hist(apartments_sp$suites, breaks=8, main="Histogram of the number of suites", xlab="Number of suites")
-hist(apartments_sp$parking_spaces, breaks=10, main="Histogram of the number of parking spaces", xlab="Number of parking spaces")
-hist(apartments_sp$final_price, main="Histogram of apartment prices", xlab="Thousands of reais (R$)", col="red", breaks=100)
+library(ggplot2)
+
+ggplot(apartments_sp, aes(x=square_meters)) +
+  geom_histogram(binwidth=10) +
+  labs(title="Histogram of the area of the apartments", x="Square meters")
+
+ggplot(apartments_sp, aes(x=bedrooms)) +
+  geom_histogram(binwidth=1) +
+  labs(title="Histogram of the number of bedrooms", x="Number of bedrooms")
+
+ggplot(apartments_sp, aes(x=bathrooms)) +
+  geom_histogram(binwidth=1) +
+  labs(title="Histogram of the number of bathrooms", x="Number of bathrooms")
+
+ggplot(apartments_sp, aes(x=suites)) +
+  geom_histogram(binwidth=1) +
+  labs(title="Histogram of the number of suites", x="Number of suites")
+
+ggplot(apartments_sp, aes(x=parking_spaces)) +
+  geom_histogram(binwidth=1) +
+  labs(title="Histogram of the number of parking spaces", x="Number of parking spaces")
+
+ggplot(apartments_sp, aes(x=final_price)) +
+  geom_histogram(binwidth=100) +
+  labs(title="Histogram of apartment prices", x="Thousands of reais (R$)")
 ```
 ```{r}
-plot(density(apartments_sp$square_meters), main = "Kernel density of area of the apartments", xlab="Square meters")
-plot(density(apartments_sp$bedrooms), main = "Kernel density of the number of bedrooms", xlab="Number of bedrooms")
-plot(density(apartments_sp$bathrooms), main = "Kernel density of the number of bathrooms", xlab="Number of bathrooms")
-plot(density(apartments_sp$suites), main = "Kernel density of the number of suites", xlab="Number of suites")
-plot(density(apartments_sp$parking_spaces), main = "Kernel density of the number of parking spaces", xlab="Number of parking spaces")
-plot(density(apartments_sp$final_price), main = "Kernel density of apartment prices", xlab="Thousands of reais (R$)")
+library(ggplot2)
+
+ggplot(apartments_sp, aes(x=square_meters)) +
+  geom_density(size=0.8) +
+  labs(title="Kernel density of area of the apartments", x="Square meters")
+
+ggplot(apartments_sp, aes(x=bedrooms)) +
+  geom_density(size=0.8) +
+  labs(title="Kernel density of the number of bedrooms", x="Number of bedrooms")
+
+ggplot(apartments_sp, aes(x=bathrooms)) +
+  geom_density(size=0.8) +
+  labs(title="Kernel density of the number of bathrooms", x="Number of bathrooms")
+
+ggplot(apartments_sp, aes(x=suites)) +
+  geom_density(size=0.8) +
+  labs(title="Kernel density of the number of suites", x="Number of suites")
+
+ggplot(apartments_sp, aes(x=parking_spaces)) +
+  geom_density(size=0.8) +
+  labs(title="Kernel density of the number of parking spaces", x="Number of parking spaces")
+
+ggplot(apartments_sp, aes(x=final_price)) +
+  geom_density(size=0.8) +
+  labs(title="Kernel density of apartment prices", x="Thousands of reais (R$)")
 ```
 
 ### Stage 2: Central tendency and variability
 
 ```{r}
-mean(apartments_sp$square_meters)
+library(knitr)
+df <- data.frame(
+  Variable = c("Square meters", "Bedrooms", "Bathrooms", "Suites", "Parking spaces", "Final price"),
+  Mean = c(mean(apartments_sp$square_meters), mean(apartments_sp$bedrooms), mean(apartments_sp$bathrooms), mean(apartments_sp$suites),
+           mean(apartments_sp$parking_spaces), mean(apartments_sp$final_price)),
+  Median = c(median(apartments_sp$square_meters), median(apartments_sp$bedrooms), median(apartments_sp$bathrooms), median(apartments_sp$suites),
+             median(apartments_sp$parking_spaces), median(apartments_sp$final_price)),
+  Mode = c(names(table(apartments_sp$square_meters))[table(apartments_sp$square_meters)==max(table(apartments_sp$square_meters))],
+           names(table(apartments_sp$bedrooms))[table(apartments_sp$bedrooms)==max(table(apartments_sp$bedrooms))],
+           names(table(apartments_sp$bathrooms))[table(apartments_sp$bathrooms)==max(table(apartments_sp$bathrooms))],
+           names(table(apartments_sp$suites))[table(apartments_sp$suites)==max(table(apartments_sp$suites))],
+           names(table(apartments_sp$parking_spaces))[table(apartments_sp$parking_spaces)==max(table(apartments_sp$parking_spaces))],
+           names(table(apartments_sp$final_price))[table(apartments_sp$final_price)==max(table(apartments_sp$final_price))])
+)
+kable(df, caption="Central tendency table")
 ```
 
+```{r}
+library(knitr)
+df1 <- data.frame(
+   Variable = c("Square meters", "Bedrooms", "Bathrooms", "Suites", "Parking spaces", "Final price"),
+   Range = c(max(apartments_sp$square_meters) - min(apartments_sp$square_meters), max(apartments_sp$bedrooms) - min(apartments_sp$bedrooms),
+             max(apartments_sp$bathrooms) - min(apartments_sp$bathrooms), max(apartments_sp$suites) - min(apartments_sp$suites),
+             max(apartments_sp$parking_spaces) - min(apartments_sp$parking_spaces), max(apartments_sp$final_price) - min(apartments_sp$final_price)),
+   
+)
+kable(df1, caption="Variability table")
+```
+
+
+### Stage 3:
 
 
