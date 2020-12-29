@@ -62,28 +62,29 @@ ggplot(apartments_sp, aes(x=final_price)) +
 library(ggplot2)
 
 ggplot(apartments_sp, aes(x=square_meters)) +
-  geom_density(size=0.8) +
-  labs(title="Kernel density of area of the apartments", x="Square meters")
+  geom_freqpoly(size=0.8) +
+  labs(title="Frequency polygon of area of the apartments", x="Square meters")
 
 ggplot(apartments_sp, aes(x=bedrooms)) +
-  geom_density(size=0.8) +
-  labs(title="Kernel density of the number of bedrooms", x="Number of bedrooms")
+  geom_freqpoly(size=0.8) +
+  labs(title="Frequency polygon of the number of bedrooms", x="Number of bedrooms")
 
 ggplot(apartments_sp, aes(x=bathrooms)) +
-  geom_density(size=0.8) +
-  labs(title="Kernel density of the number of bathrooms", x="Number of bathrooms")
+  geom_freqpoly(size=0.8) +
+  labs(title="Frequency polygon of the number of bathrooms", x="Number of bathrooms")
 
 ggplot(apartments_sp, aes(x=suites)) +
-  geom_density(size=0.8) +
-  labs(title="Kernel density of the number of suites", x="Number of suites")
+  geom_freqpoly(size=0.8) +
+  labs(title="Frequency polygon of the number of suites", x="Number of suites")
 
 ggplot(apartments_sp, aes(x=parking_spaces)) +
-  geom_density(size=0.8) +
-  labs(title="Kernel density of the number of parking spaces", x="Number of parking spaces")
+  geom_freqpoly(size=0.8) +
+  labs(title="Frequency polygon of the number of parking spaces", x="Number of parking spaces")
 
 ggplot(apartments_sp, aes(x=final_price)) +
-  geom_density(size=0.8) +
-  labs(title="Kernel density of apartment prices", x="Thousands of reais (R$)")
+  geom_freqpoly(size=0.8) +
+  labs(title="Frequency polygon of apartment prices", x="Thousands of reais (R$)")
+
 ```
 
 ### Stage 2: Central tendency and variability
@@ -113,12 +114,30 @@ df1 <- data.frame(
    Range = c(max(apartments_sp$square_meters) - min(apartments_sp$square_meters), max(apartments_sp$bedrooms) - min(apartments_sp$bedrooms),
              max(apartments_sp$bathrooms) - min(apartments_sp$bathrooms), max(apartments_sp$suites) - min(apartments_sp$suites),
              max(apartments_sp$parking_spaces) - min(apartments_sp$parking_spaces), max(apartments_sp$final_price) - min(apartments_sp$final_price)),
-   
+   Interquartile_range = c(IQR(apartments_sp$square_meters), IQR(apartments_sp$bedrooms), IQR(apartments_sp$bathrooms),
+                           IQR(apartments_sp$suites), IQR(apartments_sp$parking_spaces), IQR(apartments_sp$final_price)),
+   Standard_deviation = c(sd(apartments_sp$square_meters), sd(apartments_sp$bedrooms), sd(apartments_sp$bathrooms),
+                          sd(apartments_sp$suites), sd(apartments_sp$parking_spaces), sd(apartments_sp$final_price)),
+   Variance = c("-", var(apartments_sp$bedrooms), var(apartments_sp$bathrooms), var(apartments_sp$suites), var(apartments_sp$parking_spaces), "-")
 )
 kable(df1, caption="Variability table")
+
 ```
 
 
 ### Stage 3:
+
+```{r}
+library(ggplot2)
+library(knitr)
+df2 <- apartments_sp[ , 2:7]
+
+kable(cor(df2))
+cor(apartments_sp$square_meters, apartments_sp$final_price)
+cor(apartments_sp$bedrooms, apartments_sp$final_price)
+
+ggplot(apartments_sp, aes(x=square_meters, y=final_price)) +
+  geom_point()
+```
 
 
