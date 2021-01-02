@@ -130,14 +130,168 @@ kable(df1, caption="Variability table")
 ```{r}
 library(ggplot2)
 library(knitr)
+
 df2 <- apartments_sp[ , 2:7]
 
 kable(cor(df2))
-cor(apartments_sp$square_meters, apartments_sp$final_price)
-cor(apartments_sp$bedrooms, apartments_sp$final_price)
+
+```
+
+As we can see from the correlation matrix, all of the numerical values have linear relationships with each other from moderate to strong correlation.
+So here are some scatter plots of variables with the highest correlation coefficients.
+
+```{r}
+library(ggplot2)
 
 ggplot(apartments_sp, aes(x=square_meters, y=final_price)) +
   geom_point()
+
+ggplot(apartments_sp, aes(x=bathrooms, y=suites)) +
+  geom_jitter()
+
+ggplot(apartments_sp, aes(x=square_meters, y=bathrooms)) +
+  geom_jitter()
+
+ggplot(apartments_sp, aes(x=bathrooms, y=parking_spaces)) +
+  geom_jitter()
+
+ggplot(apartments_sp, aes(x=square_meters, y=parking_spaces)) +
+  geom_jitter()
+
+
 ```
+
+For step 3 I had to choose the pair square_meters vs final_price, because these are the only continuous variables in my dataset, meaning I can only use these variables for linear regression.
+
+```{r}
+
+lmMod <- lm(apartments_sp$final_price ~ apartments_sp$square_meters)
+lmMod
+
+ggplot(apartments_sp, aes(x=square_meters, y=final_price)) +
+  geom_point() +
+  geom_smooth(method=lm)
+
+```
+
+From the coefficients in the previous output we can construct our linear regression equation which in our case will be 
+final_price = 59.908 + 7.308 * square_meters.
+
+
+### Stage 4:
+
+For stage 4 I chose the lottery EuroMillions.
+Players have to choose 5 main numbers from 1 to 50 and 2 extra lucky star numbers from 1 to 12.
+
+To compute the probabilites to win the largest prize, we are going to use the following formula on both the main numbers and lucky star numbers:
+n! / (r! * (n - r)!)
+where n is the total number of possible number and r is the number of numbers chosen.
+So the computation in our case for main prize (5 main numbers guessed and 2 lucky star numbers guessed) would be as following:
+
+```{r}
+main_numbers <- factorial(50) / (factorial(5) * factorial(50 - 5))
+lucky_stars <- factorial(12) / (factorial(2) * factorial(12 - 2))
+
+main_numbers * lucky_stars
+
+```
+We have 1 in 139 838 160 chance of winning the main prize.
+
+For odds for smaller winnings we have to use a more complicated formula:
+(r! / (k! * (r - k)!)) * ((n-r)! / ((n - r) - (r - k))! * (r - k)!)
+where k is the numbers chosen correctly.
+
+So now that we have all the necessary formulas, we can compute the rest of the winning chances.
+For simplicity I am not going to write the full formulas if computation are easy.
+
+The computation for 5 main numbers and 1 lucky star number guessed:
+```{r}
+one_lucky_star <- lucky_stars / (2 * (factorial(10) / factorial(9)))
+
+main_numbers * one_lucky_star
+```
+ The probability is 1 in 6 991 908.
+ 
+ For 5 main numbers and  0 lucky star numbers:
+```{r}
+zero_lucky_starts <- lucky_stars / (factorial(10) / (factorial(8) * 2))
+
+main_numbers * zero_lucky_starts
+```
+ The probability is 1 in 3 107 515.
+ 
+ For 4 main numbers and 2 lucky star numbers:
+```{r}
+four_main_numbers <- main_numbers / ((factorial(5) / factorial(4)) * (factorial(45) / factorial(44)))
+four_main_numbers * lucky_stars
+```
+ The probability is 1 in 621 503.
+ 
+ For 4 main numbers and 1 lucky star number:
+```{r}
+four_main_numbers * one_lucky_star
+```
+ The probability is 1 in 31 075.
+ 
+ For 3 main numbers and 2 lucky star numbers:
+```{r}
+three_main_numbers <- main_numbers / ((factorial(5) / 12) * (factorial(45) / (factorial(43) * 2)))
+three_main_numbers * lucky_stars
+```
+The probability is 1 in 14 125.
+
+For 4 main numbers and 0 lucky star numbers:
+```{r}
+four_main_numbers * zero_lucky_starts
+```
+The probability is 1 in 13811.
+
+For 2 main number and 2 lucky star numbers:
+```{r}
+two_main_numbers <- main_numbers / ((factorial(5) / 12) * (factorial(45) / (factorial(42) * 6)))
+two_main_numbers * lucky_stars
+```
+The probability is 1 in 985.
+
+For 3 main numbers and 1 lucky star number:
+```{r}
+three_main_numbers * one_lucky_star
+```
+The probability is 1 in 706.
+
+For 3 main numbers and 0 lucky star numbers:
+```{r}
+three_main_numbers * zero_lucky_starts
+```
+The probability is 1 in 314.
+
+For 1 main number and 2 lucky star numbers:
+```{r}
+one_main_number <- main_numbers / ((factorial(5) / 24) * (factorial(45) / (factorial(41) * 24)))
+one_main_number * lucky_stars
+```
+The probability is 1 in 188.
+
+For 2 main numbers and 1 lucky star number:
+```{r}
+two_main_numbers * one_lucky_star
+```
+The probability is 1 in 49.
+
+For 2 main numbers and 0 lucky star numbers:
+```{r}
+two_main_numbers * zero_lucky_starts
+```
+The probability is 1 in 22.
+
+[EuroMillions wikipedia](https://en.wikipedia.org/wiki/EuroMillions)
+[Formula source](https://www.wikihow.com/Calculate-Lotto-Odds)
+
+
+### Stage 5:
+
+
+
+
 
 
