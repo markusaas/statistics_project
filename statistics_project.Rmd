@@ -27,37 +27,59 @@ apartments_sp <- read.csv("C:/Users/aasma/Statistics/apartments_sp.csv")
 head(apartments_sp, n=10)
 str(apartments_sp)
 ```
+As we can see, we have 15703 different objects in this dataset.
 
 The dataset has no missing values or errors.
 
-The following histograms and kernel density plots give an approximate understanding of the variables in the dataset and showcase the frequency and values of those variables. 
+The following histograms and frequency polygons give an approximate understanding of the variables in the dataset and showcase the frequency and values of those variables. In front of each histogram I have also given the range of the variable, because in histograms, when we have a certain value very few amount of times, it won't be showcased on histogram very well.
 ```{r}
 library(ggplot2)
 
+range(apartments_sp$square_meters)
 ggplot(apartments_sp, aes(x=square_meters)) +
   geom_histogram(binwidth=10) +
   labs(title="Histogram of the area of the apartments", x="Square meters")
 
+range(apartments_sp$bedrooms)
 ggplot(apartments_sp, aes(x=bedrooms)) +
   geom_histogram(binwidth=1) +
   labs(title="Histogram of the number of bedrooms", x="Number of bedrooms")
 
+range(apartments_sp$bathrooms)
 ggplot(apartments_sp, aes(x=bathrooms)) +
   geom_histogram(binwidth=1) +
   labs(title="Histogram of the number of bathrooms", x="Number of bathrooms")
 
+range(apartments_sp$suites)
 ggplot(apartments_sp, aes(x=suites)) +
   geom_histogram(binwidth=1) +
   labs(title="Histogram of the number of suites", x="Number of suites")
 
+range(apartments_sp$parking_spaces)
 ggplot(apartments_sp, aes(x=parking_spaces)) +
   geom_histogram(binwidth=1) +
   labs(title="Histogram of the number of parking spaces", x="Number of parking spaces")
 
+range(apartments_sp$final_price)
 ggplot(apartments_sp, aes(x=final_price)) +
   geom_histogram(binwidth=100) +
   labs(title="Histogram of apartment prices", x="Thousands of reais (R$)")
 ```
+
+For constructing histograms I have used ggplot2 library and I have constructed a histogram of each numerical variable in the dataset. Histograms let a person immediately grasp the sizes of our variables and give a rough image of the dataset. Especially with more discrete variables like the number of bedrooms or the number of bathrooms, where there are few unique values, we can have a histogram bar for each unique value.
+
+The first histogram shows how many apartments with how big of an area there are. From the histogram we can see, that the most frequent size of an apartment is approximately somewhere between 60 and 70 square meters and the sizes go over 800 square meters.
+
+The second histograms shows how many apartments with how many bedrooms are there. From the range we can see that we have apartments with 1-8 bedrooms and 3 bedrooms in one apartment being the most common one.
+
+The third histogram shows the number of bathrooms in apartments. We know that the number of bathrooms in one apartment ranges from 1-10 and we can see from the histogram that the most common value is 2.
+
+The fourth histogram shows the number of suites in apartments. Suites range from 0-8 and the most common value is 0.
+
+The fifth histogram shows the number of parking spaces for the apartment, which range from 1-10 and the most common one is 1.
+
+The sixth and last histogram shows the price for the apartments in thousands of reais. We can see, that the most common value for apartment prices is approximately somewhere between 400 000 and 600 000 reais with prices going up to 11 000 000 reais.
+
 ```{r}
 library(ggplot2)
 
@@ -87,7 +109,13 @@ ggplot(apartments_sp, aes(x=final_price)) +
 
 ```
 
+For frequency polygons I also used the ggplot2 library. In case of more discrete variables frequency polygons showcase the data similarly to histograms, but in case of continuous variables, frequency polygons do not rely on separate segments in the graphs like histograms do with bars, but showcase the variable with one line. Maybe frequency polygons are better for grasping how the dataset looks like faster, but histograms make it more accurately.
+
+Frequency polygons show exactly the same data here, they just showcase it in a different way.
+
 ### Stage 2: Central tendency and variability
+
+In stage 2 I have constructed two tables, one for central tendency measures and one for variability measures.
 
 ```{r}
 library(knitr)
@@ -102,10 +130,26 @@ df <- data.frame(
            names(table(apartments_sp$bathrooms))[table(apartments_sp$bathrooms)==max(table(apartments_sp$bathrooms))],
            names(table(apartments_sp$suites))[table(apartments_sp$suites)==max(table(apartments_sp$suites))],
            names(table(apartments_sp$parking_spaces))[table(apartments_sp$parking_spaces)==max(table(apartments_sp$parking_spaces))],
-           names(table(apartments_sp$final_price))[table(apartments_sp$final_price)==max(table(apartments_sp$final_price))])
+           names(table(apartments_sp$final_price))[table(apartments_sp$final_price)==max(table(apartments_sp$final_price))]),
+  Mean_trimmed_20_percent = c(mean(apartments_sp$square_meters, trim = 0.1), mean(apartments_sp$bedrooms, trim = 0.1),
+                              mean(apartments_sp$bathrooms, trim = 0.1), mean(apartments_sp$suites, trim = 0.1),
+                              mean(apartments_sp$parking_spaces, trim = 0.1), mean(apartments_sp$final_price, trim = 0.1))
 )
 kable(df, caption="Central tendency table")
 ```
+
+In central tendency table I have four variables
+
+* mean
+* median
+* mode
+* mean trimmed 20%
+
+From this table we can see, what are the average values in our variables, the middle values, the most often occurring values and also averages, when 10% from both bottom and top is trimmed off.
+
+The information in these tables corresponds to the information which we can roughly detect in histograms and frequency polygons. For example the easiest to compare are the modes, where we can see that the highest bars in histograms do in fact correspond to the numbers in this table. Rest of the information can also be seen to match with the graphs after a closer inspection.
+
+I had decided to add the mean trimmed 20%, because some variables like square meters and final price can have some outliers, which can affect the mean maybe too much. After trimming 10% from both top and bottom of the variables we can see a decrease in the mean of square meters and final price, which is not that big of change, taking account their range, but still a change worth noting down. We can also see a quite significant change in mean in suites after trimming it, indicating the suites variable has outliers in the top end. When see the histogram and range of suites, we can see that we very small amount of suites in the range 5-8, which even doesn't appear on the histogram and that is the reason, why the trimmed mean is so much smaller than the normal mean.
 
 ```{r}
 library(knitr)
@@ -121,14 +165,13 @@ df1 <- data.frame(
    Variance = c("-", var(apartments_sp$bedrooms), var(apartments_sp$bathrooms), var(apartments_sp$suites), var(apartments_sp$parking_spaces), "-")
 )
 kable(df1, caption="Variability table")
-
 ```
+
 
 
 ### Stage 3:
 
 ```{r}
-library(ggplot2)
 library(knitr)
 
 df2 <- apartments_sp[ , 2:7]
@@ -164,6 +207,7 @@ ggplot(apartments_sp, aes(x=square_meters, y=parking_spaces)) +
 For step 3 I had to choose the pair square_meters vs final_price, because these are the only continuous variables in my dataset, meaning I can only use these variables for linear regression.
 
 ```{r}
+library(ggplot2)
 
 lmMod <- lm(apartments_sp$final_price ~ apartments_sp$square_meters)
 lmMod
@@ -289,6 +333,70 @@ The probability is 1 in 22.
 
 
 ### Stage 5:
+
+In stage 5 first we are going to split the dataset into training and testing sets, with the training set being 80% of the whole dataset and testing set being 20%.
+
+```{r}
+
+dt <- apartments_sp[ , 2:7]
+smp_siz = floor(0.80*nrow(dt))
+set.seed(123)
+train_ind = sample(seq_len(nrow(dt)), size = smp_siz)
+train = dt[train_ind,]
+test = dt[-train_ind,]
+nrow(train)
+nrow(test)
+
+```
+
+Now we are going to get the linear regression model from the training set:
+
+```{r}
+
+library(knitr)
+
+kable(cor(train))
+
+```
+
+```{r}
+
+library(ggplot2)
+
+lmMod <- lm(train$final_price ~ train$square_meters)
+lmMod
+
+ggplot(train, aes(x=square_meters, y=final_price)) +
+  geom_point() +
+  geom_smooth(method=lm)
+
+```
+
+Linear regression equation for our training set is:
+final_price = 62.081 + 7.276 * square_meters
+
+```{r}
+library(MLmetrics)
+
+test_final_price <- c()
+
+i <- 1
+
+for (val in test$square_meters) {
+  test_final_price[i] <- 62.081 + 7.276 * val
+  i <- i + 1
+}
+
+test_training <- data.frame(test_final_price)
+
+MAPE(test_training$test_final_price, test$final_price)
+mean(abs((test$final_price - test_training$test_final_price) / test$final_price)) * 100
+RMSE(test$final_price, test_training$test_final_price)
+sqrt(mean((test$final_price - test_training$test_final_price)^2))
+MAE(test_training$test_final_price, test$final_price)
+
+```
+
 
 
 
