@@ -1,9 +1,9 @@
 ---
 title: 'ICY0006: Statistics and probabilty theory project'
 output:
-  word_document: default
-  pdf_document: default
   html_notebook: default
+  pdf_document: default
+  word_document: default
   html_document:
     df_print: paged
 ---
@@ -75,7 +75,7 @@ For constructing histograms I have used ggplot2 library and I have constructed a
 
 The first histogram shows how many apartments with how big of an area there are. From the histogram we can see, that the most frequent size of an apartment is approximately somewhere between 60 and 70 square meters and the sizes go over 800 square meters.
 
-The second histograms shows how many apartments with how many bedrooms are there. From the range we can see that we have apartments with 1-8 bedrooms and 3 bedrooms in one apartment being the most common one.
+The second histogram shows how many apartments with how many bedrooms are there. From the range we can see that we have apartments with 1-8 bedrooms and 3 bedrooms in one apartment being the most common one.
 
 The third histogram shows the number of bathrooms in apartments. We know that the number of bathrooms in one apartment ranges from 1-10 and we can see from the histogram that the most common value is 2.
 
@@ -191,7 +191,7 @@ From the results here we can see, that interquartile range is abnormally smaller
 
 ### Stage 3: Linear relationships and linear regression
 
-To see whether I have linear relationships in my dataset, I have constructed ja correlation matrix table, where we can see the correlation between all  the numerical variables.
+To see whether I have linear relationships in my dataset, I have constructed a correlation matrix table, where we can see the correlation between all  the numerical variables.
 
 ```{r}
 library(knitr)
@@ -279,7 +279,7 @@ For odds for smaller winnings we have to use a more complicated formula:
 
 **(r! / (k! * (r - k)!)) * ((n-r)! / ((n - r) - (r - k))! * (r - k)!)**
 
-where n and r are the same and k is the numbers chosen correctly.
+where n and r are the same as in the previous formula and k is the numbers chosen correctly.
 
 So now that we have all the necessary formulas, we can compute the rest of the winning chances.
 
