@@ -1,6 +1,11 @@
 ---
-title: "ICY0006: Statistics and probabilty theory project"
-output: html_notebook
+title: 'ICY0006: Statistics and probabilty theory project'
+output:
+  word_document: default
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
 ---
 Markus Aas 192920IVSB
 
@@ -411,7 +416,7 @@ Linear regression equation for our training set is:
 
 **final_price = 62.081 + 7.276 * square_meters**
 
-Now we need to use that linear regression equation on the testing set and see how accurate it is. In order to do that I have made another dataset, where I have all final prices of the apartments, that I got using the linear regression equation. Then I am going to compare it to the testing set final prices and see their differences. For that I have used the mean absolute percentage error (MAPE), Root-mean-square error (RMSE) and Mean absolute error (MAE).
+Now we need to use that linear regression equation on the testing set and see how accurate it is. In order to do that I have made another dataset, where I have all final prices of the apartments, that I got using the linear regression equation. Then I am going to compare it to the testing set final prices and see their differences. For that I have used the mean absolute percentage error (MAPE), Root-mean-square error (RMSE) and Mean absolute error (MAE). To calculate those I have used MLmetrics library.
 ```{r}
 library(MLmetrics)
 
