@@ -145,7 +145,7 @@ In central tendency table I have four variables
 * mode
 * mean trimmed 20%
 
-From this table we can see, what are the average values in our variables, the middle values, the most often occurring values and also averages, when 10% from both bottom and top is trimmed off.
+From this table we can see, what are the average values in our variables (mean), the middle values (median), the most often occurring values (mode) and also averages, when 10% from both bottom and top is trimmed off (mean trimmed 20%).
 
 The information in these tables corresponds to the information which we can roughly detect in histograms and frequency polygons. For example the easiest to compare are the modes, where we can see that the highest bars in histograms do in fact correspond to the numbers in this table. Rest of the information can also be seen to match with the graphs after a closer inspection.
 
@@ -160,16 +160,33 @@ df1 <- data.frame(
              max(apartments_sp$parking_spaces) - min(apartments_sp$parking_spaces), max(apartments_sp$final_price) - min(apartments_sp$final_price)),
    Interquartile_range = c(IQR(apartments_sp$square_meters), IQR(apartments_sp$bedrooms), IQR(apartments_sp$bathrooms),
                            IQR(apartments_sp$suites), IQR(apartments_sp$parking_spaces), IQR(apartments_sp$final_price)),
+   Variance = c(var(apartments_sp$square_meters), var(apartments_sp$bedrooms), var(apartments_sp$bathrooms), var(apartments_sp$suites),
+                var(apartments_sp$parking_spaces), "-"),
    Standard_deviation = c(sd(apartments_sp$square_meters), sd(apartments_sp$bedrooms), sd(apartments_sp$bathrooms),
-                          sd(apartments_sp$suites), sd(apartments_sp$parking_spaces), sd(apartments_sp$final_price)),
-   Variance = c("-", var(apartments_sp$bedrooms), var(apartments_sp$bathrooms), var(apartments_sp$suites), var(apartments_sp$parking_spaces), "-")
+                          sd(apartments_sp$suites), sd(apartments_sp$parking_spaces), sd(apartments_sp$final_price))
 )
 kable(df1, caption="Variability table")
 ```
 
+In my variability table I also have four variables, which are
 
+* range
+* interquartile range
+* standard deviation
+* variance
 
-### Stage 3:
+I have omitted in this table the variance of final price, because it is a very big number, which messes up the values of the whole variance column. The variance of final price is the following:
+```{r}
+var(apartments_sp$final_price)
+```
+
+From the values in the table we can see the range of values in a variable, which I also showed with the histograms, the range of the middle 50% of the values in a distribution (interquartile range), the average squared difference of values from the mean (variance) and standard deviation from the mean, which is square root of the variance.
+
+From the results here we can see, that interquartile range is abnormally smaller than range. That implies, that in all variables the values in either top end, bottom end or in both take up a much smaller amount of the total number of values in  variable than rest of the values. That could also indicate the presence of potential outliers. Similar deduction can be made with standard deviation in square meters and final price, where standard deviation shows, that the values can deviate from the mean quite a bit.
+
+### Stage 3: Linear relationships and linear regression
+
+To see whether I have linear relationships in my dataset, I have constructed ja correlation matrix table, where we can see the correlation between all  the numerical variables.
 
 ```{r}
 library(knitr)
@@ -180,8 +197,9 @@ kable(cor(df2))
 
 ```
 
-As we can see from the correlation matrix, all of the numerical values have linear relationships with each other from moderate to strong correlation.
-So here are some scatter plots of variables with the highest correlation coefficients.
+From the correlation matrix we can see that every variable has a linear relationship with other variables. The strength of the correlations ranges from moderate to strong in my case, with moderate meaning the correlation coefficient is between 0,5 and 0,75 and strong meaning the coefficient is between 0,75 and 0,9.
+
+I chose the top 5 pairs of variables, that have the highest correlation coefficients to visualize them using scatter plots. I also use here the ggplot2 library and in case of discrete variables like number of bedrooms and so on I used geom_jitter instead of geom_point, so that I would have each separate point in my scatter plots represented. Otherwise I would have points on top of each other forming lines and they wouldn't give a visually good representation of the data in my dataset.
 
 ```{r}
 library(ggplot2)
@@ -192,19 +210,19 @@ ggplot(apartments_sp, aes(x=square_meters, y=final_price)) +
 ggplot(apartments_sp, aes(x=bathrooms, y=suites)) +
   geom_jitter()
 
-ggplot(apartments_sp, aes(x=square_meters, y=bathrooms)) +
+ggplot(apartments_sp, aes(x=bathrooms, y=square_meters)) +
   geom_jitter()
 
 ggplot(apartments_sp, aes(x=bathrooms, y=parking_spaces)) +
   geom_jitter()
 
-ggplot(apartments_sp, aes(x=square_meters, y=parking_spaces)) +
+ggplot(apartments_sp, aes(x=parking_spaces, y=square_meters)) +
   geom_jitter()
 
 
 ```
 
-For step 3 I had to choose the pair square_meters vs final_price, because these are the only continuous variables in my dataset, meaning I can only use these variables for linear regression.
+As a dependent variable for linear regression I chose final price, because although all the variables have linear relationships with each other, only square meters and final price are continuous variables and final price would be a more logical choice out of those two as a dependent variable in my opinion. And as an independent variable for the linear regression I naturally chose square meters, because it is the other continuous variable and it should therefore give the best results.
 
 ```{r}
 library(ggplot2)
@@ -212,25 +230,36 @@ library(ggplot2)
 lmMod <- lm(apartments_sp$final_price ~ apartments_sp$square_meters)
 lmMod
 
+```
+
+Here we have applied the linear regression formula and gotten our coefficients to construct a linear regression equation which is: 
+
+**final_price = 59.908 + 7.308 * square_meters**.
+
+Next we construct a scatter plot, which we also did before, but now with a line showcasing the linear relationship between those two variables visually.
+
+```{r}
 ggplot(apartments_sp, aes(x=square_meters, y=final_price)) +
   geom_point() +
   geom_smooth(method=lm)
-
 ```
 
-From the coefficients in the previous output we can construct our linear regression equation which in our case will be 
-final_price = 59.908 + 7.308 * square_meters.
-
+We can see, that our variables have a solid linear relationship and you could say that we have quite few outliers, but taking into account the sheer amount of variables I have in my dataset, I didn't find it necessary to remove them as I would believe there wouldn't be any drastic changes.
 
 ### Stage 4:
 
 For stage 4 I chose the lottery EuroMillions.
-Players have to choose 5 main numbers from 1 to 50 and 2 extra lucky star numbers from 1 to 12.
+EuroMillions is an European lottery, where players have to choose 5 correct main numbers from the range 1 to 50 and 2 correct extra lucky star numbers from the range 1 to 12 in order to win the jackpot prize.
 
-To compute the probabilites to win the largest prize, we are going to use the following formula on both the main numbers and lucky star numbers:
-n! / (r! * (n - r)!)
-where n is the total number of possible number and r is the number of numbers chosen.
-So the computation in our case for main prize (5 main numbers guessed and 2 lucky star numbers guessed) would be as following:
+To compute the probabilities to win the largest prize, we are going to use the following formula on both the main numbers and lucky star numbers:
+
+**n! / (r! * (n - r)!)**
+
+where n is the total number of possible numbers and r is the number of numbers chosen.
+
+For information I am not going to directly calculate the whole fraction of the probability of winning, because then we would get abnormally small numbers, which would not be well presented in RStudio. Instead I am going to calculate just the denominator so that we would have a nice value.
+
+So the computation in our case for main prize (5 main numbers guessed correctly and 2 lucky star numbers guessed correctly) would be as following:
 
 ```{r}
 main_numbers <- factorial(50) / (factorial(5) * factorial(50 - 5))
@@ -239,14 +268,17 @@ lucky_stars <- factorial(12) / (factorial(2) * factorial(12 - 2))
 main_numbers * lucky_stars
 
 ```
-We have 1 in 139 838 160 chance of winning the main prize.
+We computed the probabilities of choosing all the main numbers correctly and all the lucky star numbers correctly first separately and then we multiplies them together. And as a result we know that we have **1 in 139 838 160** chance of winning the main prize.
 
 For odds for smaller winnings we have to use a more complicated formula:
-(r! / (k! * (r - k)!)) * ((n-r)! / ((n - r) - (r - k))! * (r - k)!)
-where k is the numbers chosen correctly.
+
+**(r! / (k! * (r - k)!)) * ((n-r)! / ((n - r) - (r - k))! * (r - k)!)**
+
+where n and r are the same and k is the numbers chosen correctly.
 
 So now that we have all the necessary formulas, we can compute the rest of the winning chances.
-For simplicity I am not going to write the full formulas if computation are easy.
+
+For simplicity I am not going to write out the full formulas if computations are easy. It would be messy in RStudio and it wouldn't be worth it. I also am not going to redo calculations, that I have already done. So the rest of the winning chances formulas are as follows.
 
 The computation for 5 main numbers and 1 lucky star number guessed:
 ```{r}
@@ -254,7 +286,7 @@ one_lucky_star <- lucky_stars / (2 * (factorial(10) / factorial(9)))
 
 main_numbers * one_lucky_star
 ```
- The probability is 1 in 6 991 908.
+ The probability is **1 in 6 991 908**.
  
  For 5 main numbers and  0 lucky star numbers:
 ```{r}
@@ -262,73 +294,76 @@ zero_lucky_starts <- lucky_stars / (factorial(10) / (factorial(8) * 2))
 
 main_numbers * zero_lucky_starts
 ```
- The probability is 1 in 3 107 515.
+ The probability is **1 in 3 107 515**.
  
  For 4 main numbers and 2 lucky star numbers:
 ```{r}
 four_main_numbers <- main_numbers / ((factorial(5) / factorial(4)) * (factorial(45) / factorial(44)))
 four_main_numbers * lucky_stars
 ```
- The probability is 1 in 621 503.
+ The probability is **1 in 621 503**.
  
  For 4 main numbers and 1 lucky star number:
 ```{r}
 four_main_numbers * one_lucky_star
 ```
- The probability is 1 in 31 075.
+ The probability is **1 in 31 075**.
  
  For 3 main numbers and 2 lucky star numbers:
 ```{r}
 three_main_numbers <- main_numbers / ((factorial(5) / 12) * (factorial(45) / (factorial(43) * 2)))
 three_main_numbers * lucky_stars
 ```
-The probability is 1 in 14 125.
+The probability is **1 in 14 125**.
 
 For 4 main numbers and 0 lucky star numbers:
 ```{r}
 four_main_numbers * zero_lucky_starts
 ```
-The probability is 1 in 13811.
+The probability is **1 in 13 811**.
 
 For 2 main number and 2 lucky star numbers:
 ```{r}
 two_main_numbers <- main_numbers / ((factorial(5) / 12) * (factorial(45) / (factorial(42) * 6)))
 two_main_numbers * lucky_stars
 ```
-The probability is 1 in 985.
+The probability is **1 in 985**.
 
 For 3 main numbers and 1 lucky star number:
 ```{r}
 three_main_numbers * one_lucky_star
 ```
-The probability is 1 in 706.
+The probability is **1 in 706**.
 
 For 3 main numbers and 0 lucky star numbers:
 ```{r}
 three_main_numbers * zero_lucky_starts
 ```
-The probability is 1 in 314.
+The probability is **1 in 314**.
 
 For 1 main number and 2 lucky star numbers:
 ```{r}
 one_main_number <- main_numbers / ((factorial(5) / 24) * (factorial(45) / (factorial(41) * 24)))
 one_main_number * lucky_stars
 ```
-The probability is 1 in 188.
+The probability is **1 in 188**.
 
 For 2 main numbers and 1 lucky star number:
 ```{r}
 two_main_numbers * one_lucky_star
 ```
-The probability is 1 in 49.
+The probability is **1 in 49**.
 
 For 2 main numbers and 0 lucky star numbers:
 ```{r}
 two_main_numbers * zero_lucky_starts
 ```
-The probability is 1 in 22.
+The probability is **1 in 22**.
+
+So there we have all probabilities of winning for each main number and lucky star number combination, that are eligible for a prize.
 
 [EuroMillions wikipedia](https://en.wikipedia.org/wiki/EuroMillions)
+
 [Formula source](https://www.wikihow.com/Calculate-Lotto-Odds)
 
 
@@ -346,8 +381,8 @@ train = dt[train_ind,]
 test = dt[-train_ind,]
 nrow(train)
 nrow(test)
-
 ```
+Here we can see, that now we have a training set with 12562 objects and a testing set with 3141 objects.
 
 Now we are going to get the linear regression model from the training set:
 
@@ -356,9 +391,10 @@ Now we are going to get the linear regression model from the training set:
 library(knitr)
 
 kable(cor(train))
-
 ```
+Here we have again a table for correlation matrix, but this time it is only for the training set.
 
+Now we construct a linear regression equation using only the data in the training set. I have also included the scatter plot of the training set, but it visually looks basically the same.
 ```{r}
 
 library(ggplot2)
@@ -369,12 +405,13 @@ lmMod
 ggplot(train, aes(x=square_meters, y=final_price)) +
   geom_point() +
   geom_smooth(method=lm)
-
 ```
 
 Linear regression equation for our training set is:
-final_price = 62.081 + 7.276 * square_meters
 
+**final_price = 62.081 + 7.276 * square_meters**
+
+Now we need to use that linear regression equation on the testing set and see how accurate it is. In order to do that I have made another dataset, where I have all final prices of the apartments, that I got using the linear regression equation. Then I am going to compare it to the testing set final prices and see their differences. For that I have used the mean absolute percentage error (MAPE), Root-mean-square error (RMSE) and Mean absolute error (MAE).
 ```{r}
 library(MLmetrics)
 
@@ -390,15 +427,18 @@ for (val in test$square_meters) {
 test_training <- data.frame(test_final_price)
 
 MAPE(test_training$test_final_price, test$final_price)
-mean(abs((test$final_price - test_training$test_final_price) / test$final_price)) * 100
-RMSE(test$final_price, test_training$test_final_price)
-sqrt(mean((test$final_price - test_training$test_final_price)^2))
-MAE(test_training$test_final_price, test$final_price)
 
+RMSE(test$final_price, test_training$test_final_price)
+
+MAE(test_training$test_final_price, test$final_price)
 ```
 
+From MAPE result, which is 0.36 or 36%, we can see, that the error percentage is quite big. 36% is a noteworthy amount and should definitely be taken into account, when using the linear regression equation to get some values which in our case are apartment prices. You can use the linear regression equation to get a rough estimation for an apartment price, but you definitely shouldn't rely on it too much.
 
+Seeing the RMSE result, which is 520, we can also see that the actual prices can deviate quite a bit from the calculated ones and you shouldn't trust the calculated values that much.
 
+The same goes for MAE result, which is 307.
+In conclusion I would say that this linear regression equation could be used to get a very rough estimate of the apartment prices, but you definitely shouldn't trust those result very much as they could deviate from the real price quite a bit. They do give a rough idea of how much apartments with a certain area could cost.
 
 
 
